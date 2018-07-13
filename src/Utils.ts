@@ -250,15 +250,17 @@ export namespace Utils {
     }
 
     export function executeMavenCommand(command: string, pomfile: string): void {
+        const pomFilePath: string = formattedFilepath(pomfile);
+        const shellPath: string = pomFilePath.replace('pom.xml', '');
         const fullCommand: string = [
             Utils.getMavenExecutable(),
             command.trim(),
             "-f",
-            `"${formattedFilepath(pomfile)}"`,
+            `"${pomFilePath}"`,
             workspace.getConfiguration("maven.executable", Uri.file(pomfile)).get<string>("options")
         ].filter((x: string) => x).join(" ");
-        const name: string = "Maven";
-        VSCodeUI.runInTerminal(fullCommand, { name });
+        const name: string = `Maven - ${shellPath}`;
+        VSCodeUI.runInTerminal(fullCommand, { name, shellPath });
         updateLRUCommands(command, pomfile);
     }
 

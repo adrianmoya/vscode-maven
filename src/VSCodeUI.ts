@@ -10,9 +10,12 @@ export namespace VSCodeUI {
 
     export function runInTerminal(command: string, options?: ITerminalOptions): void {
         const defaultOptions: ITerminalOptions = { addNewLine: true, name: "Maven" };
-        const { addNewLine, name, cwd } = Object.assign(defaultOptions, options);
+        const { addNewLine, name, cwd, shellPath } = Object.assign(defaultOptions, options);
         if (terminals[name] === undefined) {
             terminals[name] = window.createTerminal({ name });
+            if (shellPath) {
+                terminals[name].sendText(getCDCommand(shellPath), true);
+            }
             setupEnvironment(terminals[name]);
         }
         terminals[name].show();
@@ -186,6 +189,7 @@ interface ITerminalOptions {
     addNewLine?: boolean;
     name?: string;
     cwd?: string;
+    shellPath?: string;
 }
 
 interface IQuickPickItemEx<T> extends QuickPickItem {
